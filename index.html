@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stylish Stopwatch</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+
+    .stopwatch-container {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      width: 360px;
+      max-width: 95%;
+    }
+
+    .display {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .controls button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    .start { background-color: #28a745; color: white; }
+    .pause { background-color: #ffc107; color: black; }
+    .reset { background-color: #dc3545; color: white; }
+    .lap { background-color: #007bff; color: white; }
+
+    .controls button:hover {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+
+    .laps {
+      margin-top: 20px;
+      text-align: left;
+      max-height: 150px;
+      overflow-y: auto;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .lap-item {
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 400px) {
+      .display {
+        font-size: 2em;
+      }
+
+      .controls button {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+     <!-- <h1 class="page-title">Online Stopwatch</h1> -->
+  <div class="stopwatch-container">
+    <div class="display" id="display">00:00:00.000</div>
+    <div class="controls">
+      <button class="start" onclick="startTimer()">Start</button>
+      <button class="pause" onclick="pauseTimer()">Pause</button>
+      <button class="reset" onclick="resetTimer()">Reset</button>
+      <button class="lap" onclick="recordLap()">Lap</button>
+    </div>
+    <div class="laps" id="laps"></div>
+  </div>
+
+  <script>
+    let startTime;
+    let elapsedTime = 0;
+    let timerInterval;
+    let isRunning = false;
+
+    function timeToString(time) {
+      let hrs = Math.floor(time / 3600000);
+      let mins = Math.floor((time % 3600000) / 60000);
+      let secs = Math.floor((time % 60000) / 1000);
+      let ms = time % 1000;
+
+      return (
+        (hrs < 10 ? "0" + hrs : hrs) + ":" +
+        (mins < 10 ? "0" + mins : mins) + ":" +
+        (secs < 10 ? "0" + secs : secs) + "." +
+        (ms < 100 ? (ms < 10 ? "00" + ms : "0" + ms) : ms)
+      );
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      startTime = Date.now() - elapsedTime;
+      timerInterval = setInterval(() => {
+        elapsedTime = Date.now() - startTime;
+        document.getElementById("display").textContent = timeToString(elapsedTime);
+      }, 10);
+    }
+
+    function pauseTimer() {
+      if (!isRunning) return;
+      isRunning = false;
+      clearInterval(timerInterval);
+    }
+
+    function resetTimer() {
+      isRunning = false;
+      clearInterval(timerInterval);
+      elapsedTime = 0;
+      document.getElementById("display").textContent = "00:00:00.000";
+      document.getElementById("laps").innerHTML = "";
+    }
+
+    function recordLap() {
+    //   if (!isRunning) return;
+   const lapTime = timeToString(elapsedTime);
+  const lapContainer = document.getElementById("laps");
+  const lapItem = document.createElement("div");
+  lapItem.className = "lap-item";
+  lapItem.textContent = "Lap " + (lapContainer.children.length + 1) + ": " + lapTime;
+  lapContainer.prepend(lapItem);
+    }
+  </script>
+</body>
+</html>
